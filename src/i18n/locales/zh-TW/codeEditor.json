@@ -41,6 +41,7 @@
     "htmlRenderError": "HTML 內容驗證失敗：{{reason}}。點擊重新產生。",
     "contentTooLarge": "內容超過 200KB 限制（目前 {{size}}KB）",
     "invalidHtml": "內容不是有效的 HTML 格式",
-    "externalResources": "包含外部資源引用，請使用 data: URI 內嵌"
+    "externalResources": "包含外部資源引用，請使用 data: URI 內嵌",
+    "regenerateSuffix": "您上次輸出的 HTML 驗證失敗：{{reason}}。請修正後重新輸出。"
   }
 }

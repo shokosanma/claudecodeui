@@ -43,6 +43,7 @@
     "htmlRenderError": "La validation du contenu HTML a échoué : {{reason}}. Cliquez pour régénérer.",
     "contentTooLarge": "Le contenu dépasse la limite de 200 Ko (actuellement {{size}} Ko)",
     "invalidHtml": "Le contenu n'est pas au format HTML valide",
-    "externalResources": "Contient des références à des ressources externes. Veuillez utiliser data: URI"
+    "externalResources": "Contient des références à des ressources externes. Veuillez utiliser data: URI",
+    "regenerateSuffix": "Votre précédente sortie HTML a échoué à la validation : {{reason}}. Veuillez corriger et produire à nouveau."
   }
 }

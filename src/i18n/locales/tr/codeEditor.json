@@ -43,6 +43,7 @@
     "htmlRenderError": "HTML içeriği doğrulaması başarısız: {{reason}}. Yeniden oluşturmak için tıklayın.",
     "contentTooLarge": "İçerik 200KB sınırını aşıyor (mevcut {{size}}KB)",
     "invalidHtml": "İçerik geçerli HTML formatında değil",
-    "externalResources": "Harici kaynak referansları içeriyor. Lütfen data: URI kullanın"
+    "externalResources": "Harici kaynak referansları içeriyor. Lütfen data: URI kullanın",
+    "regenerateSuffix": "Önceki HTML çıktınız doğrulamadan geçemedi: {{reason}}. Lütfen düzeltip tekrar çıktı verin."
   }
 }

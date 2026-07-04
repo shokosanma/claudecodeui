@@ -10,7 +10,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    include: ['src/**/*.test.{ts,tsx}'],
+    include: ['src/**/*.test.{ts,tsx}', 'shared/**/*.test.{js,ts}'],
     exclude: ['**/QuestionAnswerContent.test.tsx'],
   },
 });

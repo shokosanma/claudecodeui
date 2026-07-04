@@ -43,6 +43,7 @@
     "htmlRenderError": "Die HTML-Validierung ist fehlgeschlagen: {{reason}}. Klicken Sie zum Neugenerieren.",
     "contentTooLarge": "Inhalt überschreitet das 200KB-Limit (aktuell {{size}}KB)",
     "invalidHtml": "Inhalt ist kein gültiges HTML-Format",
-    "externalResources": "Enthält externe Ressourcenverweise. Bitte verwenden Sie data: URI"
+    "externalResources": "Enthält externe Ressourcenverweise. Bitte verwenden Sie data: URI",
+    "regenerateSuffix": "Ihre vorherige HTML-Ausgabe hat die Validierung nicht bestanden: {{reason}}. Bitte korrigieren und erneut ausgeben."
   }
 }

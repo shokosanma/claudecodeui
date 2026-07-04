@@ -43,6 +43,7 @@
     "htmlRenderError": "La convalida del contenuto HTML è fallita: {{reason}}. Clicca per rigenerare.",
     "contentTooLarge": "Il contenuto supera il limite di 200KB (attuale {{size}}KB)",
     "invalidHtml": "Il contenuto non è in formato HTML valido",
-    "externalResources": "Contiene riferimenti a risorse esterne. Utilizzare data: URI"
+    "externalResources": "Contiene riferimenti a risorse esterne. Utilizzare data: URI",
+    "regenerateSuffix": "La tua precedente output HTML non ha superato la convalida: {{reason}}. Correggi e invia di nuovo."
   }
 }
