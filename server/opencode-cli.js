@@ -9,6 +9,7 @@ import { providerAuthService } from './modules/providers/services/provider-auth.
 import { providerModelsService } from './modules/providers/services/provider-models.service.js';
 import { notifyRunFailed, notifyRunStopped } from './services/notification-orchestrator.js';
 import { createCompleteMessage, createNormalizedMessage, getOpenCodeDatabasePath } from './shared/utils.js';
+import { prependHtmlOutputInstructions } from '../shared/html-output-prompt.js';
 
 const spawnFunction = process.platform === 'win32' ? crossSpawn : spawn;
 
@@ -93,6 +94,7 @@ function readOpenCodeTokenUsage(sessionId) {
 async function spawnOpenCode(command, options = {}, ws) {
   return new Promise((resolve, reject) => {
     const { sessionId, projectPath, cwd, model, effort, sessionSummary } = options;
+    const providerCommand = prependHtmlOutputInstructions(command, options.htmlOutputInstructions);
     const workingDir = cwd || projectPath || process.cwd();
     const processKey = sessionId || Date.now().toString();
     let capturedSessionId = sessionId || null;
@@ -223,8 +225,8 @@ async function spawnOpenCode(command, options = {}, ws) {
       if (resolvedEffort) {
         args.push('--variant', resolvedEffort);
       }
-      if (command && command.trim()) {
-        args.push(command.trim());
+      if (providerCommand && providerCommand.trim()) {
+        args.push(providerCommand.trim());
       }
 
       opencodeProcess = spawnFunction('opencode', args, {

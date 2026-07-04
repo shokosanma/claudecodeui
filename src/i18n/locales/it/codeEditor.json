@@ -32,5 +32,17 @@
   "binaryFile": {
     "title": "File binario",
     "message": "Il file \"{{fileName}}\" non può essere visualizzato nell'editor di testo perché è un file binario."
+  },
+  "htmlCard": {
+    "loadFailed": "Caricamento fallito",
+    "regenerate": "Rigenera",
+    "zoomIn": "Ingrandisci",
+    "zoomOut": "Riduci",
+    "resetZoom": "Reimposta zoom",
+    "loading": "Caricamento...",
+    "htmlRenderError": "La convalida del contenuto HTML è fallita: {{reason}}. Clicca per rigenerare.",
+    "contentTooLarge": "Il contenuto supera il limite di 200KB (attuale {{size}}KB)",
+    "invalidHtml": "Il contenuto non è in formato HTML valido",
+    "externalResources": "Contiene riferimenti a risorse esterne. Utilizzare data: URI"
   }
 }

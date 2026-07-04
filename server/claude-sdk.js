@@ -220,9 +220,22 @@ function mapCliOptionsToSDK(options = {}) {
 
   sdkOptions.systemPrompt = {
     type: 'preset',
-    preset: 'claude_code'
+    preset: 'claude_code',  // Required to use CLAUDE.md
   };
 
+  const htmlOutputInstructions = typeof options.htmlOutputInstructions === 'string'
+    ? options.htmlOutputInstructions.trim()
+    : '';
+  if (htmlOutputInstructions) {
+    sdkOptions.systemPrompt = {
+      type: 'preset',
+      preset: 'claude_code',
+      append: htmlOutputInstructions,
+    };
+  }
+
+  // Map setting sources for CLAUDE.md loading
+  // This loads CLAUDE.md from project, user (~/.config/claude/CLAUDE.md), and local directories
   sdkOptions.settingSources = ['project', 'user', 'local'];
 
   if (sessionId) {

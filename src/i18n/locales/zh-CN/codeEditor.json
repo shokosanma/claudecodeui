@@ -30,5 +30,18 @@
   "binaryFile": {
     "title": "二进制文件",
     "message": "文件 \"{{fileName}}\" 无法在文本编辑器中显示，因为它是二进制文件。"
+  },
+  "htmlCard": {
+    "loadFailed": "加载失败",
+    "regenerate": "重新生成",
+    "zoomIn": "放大",
+    "zoomOut": "缩小",
+    "resetZoom": "重置缩放",
+    "loading": "加载中...",
+    "htmlRenderError": "HTML 内容校验失败：{{reason}}。点击重新生成。",
+    "contentTooLarge": "内容超过 200KB 限制（当前 {{size}}KB）",
+    "invalidHtml": "内容不是有效的 HTML 格式",
+    "externalResources": "包含外部资源引用，请使用 data: URI 内嵌",
+    "regenerateSuffix": "你上次输出的 HTML 校验失败：{{reason}}。请修正后重新输出。"
   }
 }

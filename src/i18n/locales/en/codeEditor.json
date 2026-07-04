@@ -37,5 +37,18 @@
     "loading": "Loading preview...",
     "error": "Unable to display this file.",
     "openInNewTab": "Open in new tab"
+  },
+  "htmlCard": {
+    "loadFailed": "Load failed",
+    "regenerate": "Regenerate",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "resetZoom": "Reset zoom",
+    "loading": "Loading...",
+    "htmlRenderError": "The HTML content failed validation: {{reason}}. Click to regenerate.",
+    "contentTooLarge": "Content exceeds 200KB limit (current {{size}}KB)",
+    "invalidHtml": "Content is not valid HTML format",
+    "externalResources": "Contains external resource references, please use data: URI",
+    "regenerateSuffix": "Your previous HTML output failed validation: {{reason}}. Please fix and output again."
   }
 }

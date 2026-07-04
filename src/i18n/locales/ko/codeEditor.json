@@ -30,5 +30,17 @@
   "binaryFile": {
     "title": "바이너리 파일",
     "message": "파일 \"{{fileName}}\"은(는) 바이너리 파일이므로 텍스트 편집기에서 표시할 수 없습니다."
+  },
+  "htmlCard": {
+    "loadFailed": "로드 실패",
+    "regenerate": "재생성",
+    "zoomIn": "확대",
+    "zoomOut": "축소",
+    "resetZoom": "확대/축소 초기화",
+    "loading": "로딩 중...",
+    "htmlRenderError": "HTML 콘텐츠 검증 실패: {{reason}}. 클릭하여 재생성하세요.",
+    "contentTooLarge": "콘텐츠가 200KB 제한을 초과했습니다(현재 {{size}}KB)",
+    "invalidHtml": "유효한 HTML 형식이 아닙니다",
+    "externalResources": "외부 리소스 참조가 포함되어 있습니다. data: URI를 사용하세요"
   }
 }

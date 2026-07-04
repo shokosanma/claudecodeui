@@ -6,12 +6,13 @@ import { useTasksSettings } from '../../../contexts/TasksSettingsContext';
 import { useWebSocket } from '../../../contexts/WebSocketContext';
 import PermissionContext from '../../../contexts/PermissionContext';
 import { QuickSettingsPanel } from '../../quick-settings-panel';
-import type { ChatInterfaceProps, Provider  } from '../types/types';
+import type { ChatInterfaceProps, Provider, ChatMessage } from '../types/types';
 import { useChatProviderState } from '../hooks/useChatProviderState';
 import { useChatSessionState } from '../hooks/useChatSessionState';
 import { useChatRealtimeHandlers } from '../hooks/useChatRealtimeHandlers';
 import { useChatComposerState } from '../hooks/useChatComposerState';
 import { useSessionStore } from '../../../stores/useSessionStore';
+import { validateHtmlMessage } from '../utils/htmlValidation';
 
 import ChatMessagesPane from './subcomponents/ChatMessagesPane';
 import ChatComposer from './subcomponents/ChatComposer';
@@ -40,6 +41,7 @@ function ChatInterface({
   const { tasksEnabled, isTaskMasterInstalled } = useTasksSettings();
   const { subscribe } = useWebSocket();
   const { t } = useTranslation('chat');
+  const { t: tCodeEditor } = useTranslation('codeEditor');
 
   const sessionStore = useSessionStore();
   const streamTimerRef = useRef<number | null>(null);
@@ -237,6 +239,53 @@ function ChatInterface({
     });
   }, [selectedProject, selectedSession, sendMessage, sessionStore]);
 
+  const handleRegenerateHtml = useCallback((failedMessage: ChatMessage) => {
+    if (!selectedSession?.id) return;
+
+    const idx = chatMessages.findIndex(
+      (m) => m.timestamp === failedMessage.timestamp && m.content === failedMessage.content,
+    );
+    const searchFrom = idx >= 0 ? idx : chatMessages.length;
+
+    let userMsg = '';
+    for (let i = searchFrom - 1; i >= 0; i--) {
+      const msg = chatMessages[i];
+      if (msg.type === 'user' && String(msg.content || '').trim()) {
+        userMsg = String(msg.content);
+        break;
+      }
+    }
+    if (!userMsg) return;
+
+    const reasonKey = (() => {
+      if (failedMessage.htmlErrorReason) {
+        return String(failedMessage.htmlErrorReason);
+      }
+      const check = validateHtmlMessage(String(failedMessage.content || ''));
+      return check.reason ?? 'invalidHtml';
+    })();
+    const metadata = (() => {
+      if (failedMessage.htmlErrorMetadata) {
+        return failedMessage.htmlErrorMetadata as Record<string, string>;
+      }
+      const check = validateHtmlMessage(String(failedMessage.content || ''));
+      return check.metadata ?? {};
+    })();
+    const reasonText = tCodeEditor(`htmlCard.${reasonKey}`, metadata);
+    const suffix = tCodeEditor('htmlCard.regenerateSuffix', {
+      reason: reasonText,
+      defaultValue: `Your previous HTML output failed validation: ${reasonText}. Please fix and output again.`,
+    });
+
+    onSessionProcessing?.(selectedSession.id);
+
+    sendMessage({
+      type: 'chat.send',
+      sessionId: selectedSession.id,
+      content: `${userMsg}\n\n${suffix}`,
+    });
+  }, [chatMessages, onSessionProcessing, selectedSession, sendMessage, tCodeEditor]);
+
   useChatRealtimeHandlers({
     subscribe,
     provider,
@@ -362,6 +411,7 @@ function ChatInterface({
           showRawParameters={showRawParameters}
           showThinking={showThinking}
           selectedProject={selectedProject}
+          onRegenerateHtml={handleRegenerateHtml}
         />
 
         <div className="relative flex-shrink-0">

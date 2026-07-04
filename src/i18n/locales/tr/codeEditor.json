@@ -32,5 +32,17 @@
   "binaryFile": {
     "title": "Binary Dosya",
     "message": "\"{{fileName}}\" dosyası binary olduğu için metin editöründe gösterilemez."
+  },
+  "htmlCard": {
+    "loadFailed": "Yükleme başarısız",
+    "regenerate": "Yeniden oluştur",
+    "zoomIn": "Yakınlaştır",
+    "zoomOut": "Uzaklaştır",
+    "resetZoom": "Yakınlaştırmayı sıfırla",
+    "loading": "Yükleniyor...",
+    "htmlRenderError": "HTML içeriği doğrulaması başarısız: {{reason}}. Yeniden oluşturmak için tıklayın.",
+    "contentTooLarge": "İçerik 200KB sınırını aşıyor (mevcut {{size}}KB)",
+    "invalidHtml": "İçerik geçerli HTML formatında değil",
+    "externalResources": "Harici kaynak referansları içeriyor. Lütfen data: URI kullanın"
   }
 }

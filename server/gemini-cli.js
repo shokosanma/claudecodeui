@@ -11,6 +11,7 @@ import { notifyRunFailed, notifyRunStopped } from './services/notification-orche
 import { providerAuthService } from './modules/providers/services/provider-auth.service.js';
 import { providerModelsService } from './modules/providers/services/provider-models.service.js';
 import { createCompleteMessage, createNormalizedMessage } from './shared/utils.js';
+import { prependHtmlOutputInstructions } from '../shared/html-output-prompt.js';
 
 // Use cross-spawn on Windows for correct .cmd resolution (same pattern as cursor-cli.js)
 const spawnFunction = process.platform === 'win32' ? crossSpawn : spawn;
@@ -121,6 +122,7 @@ async function buildGeminiProcessEnv() {
 
 async function spawnGemini(command, options = {}, ws) {
     const { sessionId, projectPath, cwd, toolsSettings, permissionMode, images, sessionSummary } = options;
+    const providerCommand = prependHtmlOutputInstructions(command, options.htmlOutputInstructions);
     const resolvedModel = await providerModelsService.resolveResumeModel(
         'gemini',
         sessionId,
@@ -144,8 +146,8 @@ async function spawnGemini(command, options = {}, ws) {
     const args = [];
 
     // Add prompt flag with command if we have a command
-    if (command && command.trim()) {
-        args.push('--prompt', command);
+    if (providerCommand && providerCommand.trim()) {
+        args.push('--prompt', providerCommand);
     }
 
     // If we have a sessionId, we want to resume
@@ -190,13 +192,13 @@ async function spawnGemini(command, options = {}, ws) {
 
             // Include the full image paths in the prompt for Gemini to reference
             // Gemini CLI can read images from file paths in the prompt
-            if (tempImagePaths.length > 0 && command && command.trim()) {
+            if (tempImagePaths.length > 0 && providerCommand && providerCommand.trim()) {
                 const imageNote = `\n\n[Images given: ${tempImagePaths.length} images are located at the following paths:]\n${tempImagePaths.map((p, i) => `${i + 1}. ${p}`).join('\n')}`;
-                const modifiedCommand = command + imageNote;
+                const modifiedCommand = providerCommand + imageNote;
 
                 // Update the command in args
                 const promptIndex = args.indexOf('--prompt');
-                if (promptIndex !== -1 && args[promptIndex + 1] === command) {
+                if (promptIndex !== -1 && args[promptIndex + 1] === providerCommand) {
                     args[promptIndex + 1] = modifiedCommand;
                 } else if (promptIndex !== -1) {
                     // If we're using context, update the full prompt

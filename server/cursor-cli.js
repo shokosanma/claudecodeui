@@ -5,6 +5,7 @@ import { sessionsService } from './modules/providers/services/sessions.service.j
 import { providerAuthService } from './modules/providers/services/provider-auth.service.js';
 import { providerModelsService } from './modules/providers/services/provider-models.service.js';
 import { createCompleteMessage, createNormalizedMessage } from './shared/utils.js';
+import { prependHtmlOutputInstructions } from '../shared/html-output-prompt.js';
 
 // Use cross-spawn on Windows for better command execution
 const spawnFunction = process.platform === 'win32' ? crossSpawn : spawn;
@@ -30,6 +31,7 @@ async function spawnCursor(command, options = {}, ws) {
   return new Promise(async (resolve, reject) => {
     const { sessionId, projectPath, cwd, resume, toolsSettings, skipPermissions, model, sessionSummary } = options;
     const resolvedModel = await providerModelsService.resolveResumeModel('cursor', sessionId, model);
+    const providerCommand = prependHtmlOutputInstructions(command, options.htmlOutputInstructions);
     let capturedSessionId = sessionId; // Track session ID throughout the process
     let sessionCreatedSent = false; // Track if we've already sent session-created event
     let hasRetriedWithTrust = false;
@@ -54,9 +56,9 @@ async function spawnCursor(command, options = {}, ws) {
       baseArgs.push('--resume=' + sessionId);
     }
 
-    if (command && command.trim()) {
+    if (providerCommand && providerCommand.trim()) {
       // Provide a prompt (works for both new and resumed sessions)
-      baseArgs.push('-p', command);
+      baseArgs.push('-p', providerCommand);
 
       // Model overrides are applied to both new and resumed sessions so a
       // session-scoped change request can take effect on the next turn.

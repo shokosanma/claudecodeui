@@ -6,6 +6,7 @@
 import type { NormalizedMessage } from '../../../stores/useSessionStore';
 import type { ChatMessage, SubagentChildTool } from '../types/types';
 import { decodeHtmlEntities, unescapeWithMathProtection, formatUsageLimitText } from '../utils/chatFormatting';
+import { stripHtmlOutputPrompt } from '../../../../shared/html-output-prompt.js';
 
 function formatToolResultContent(content: unknown): string {
   const text = typeof content === 'string' ? content : JSON.stringify(content);
@@ -69,7 +70,7 @@ export function normalizedToChatMessages(messages: NormalizedMessage[]): ChatMes
           } else {
             converted.push({
               type: 'user',
-              content: unescapeWithMathProtection(decodeHtmlEntities(content)),
+              content: unescapeWithMathProtection(decodeHtmlEntities(stripHtmlOutputPrompt(content))),
               timestamp: msg.timestamp,
               ...sharedMetadata,
             });
@@ -82,6 +83,9 @@ export function normalizedToChatMessages(messages: NormalizedMessage[]): ChatMes
             type: 'assistant',
             content: text,
             timestamp: msg.timestamp,
+            isHtmlError: msg.isHtmlError,
+            htmlErrorReason: msg.htmlErrorReason,
+            htmlErrorMetadata: msg.htmlErrorMetadata,
             ...sharedMetadata,
           });
         }

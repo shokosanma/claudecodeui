@@ -10,10 +10,14 @@ import { normalizeInlineCodeFences } from '../../utils/chatFormatting';
 import { copyTextToClipboard } from '../../../../utils/clipboard';
 import { usePaletteOps } from '../../../../contexts/PaletteOpsContext';
 import { useTheme } from '../../../../contexts/ThemeContext';
+import { HtmlCard } from './HtmlCard';
+import { splitHtmlMessageContent, validateHtml } from '../../utils/htmlValidation';
+import { getSanitizePlugins } from '../../utils/htmlSanitize';
 
 type MarkdownProps = {
   children: React.ReactNode;
   className?: string;
+  onRegenerate?: () => void;
 };
 
 // Links to the wider web (or in-page anchors) keep normal browser navigation;
@@ -183,10 +187,10 @@ const markdownComponents = {
   ),
 };
 
-export function Markdown({ children, className }: MarkdownProps) {
+export function Markdown({ children, className, onRegenerate }: MarkdownProps) {
   const content = normalizeInlineCodeFences(String(children ?? ''));
   const remarkPlugins = useMemo(() => [remarkGfm, remarkMath], []);
-  const rehypePlugins = useMemo(() => [rehypeKatex], []);
+  const rehypePlugins = useMemo(() => [rehypeKatex, ...getSanitizePlugins()], []);
   const { openFileInEditor } = usePaletteOps();
 
   const components = useMemo(
@@ -227,6 +231,35 @@ export function Markdown({ children, className }: MarkdownProps) {
     }),
     [openFileInEditor],
   );
+
+  const htmlSplit = useMemo(() => splitHtmlMessageContent(content), [content]);
+  if (htmlSplit) {
+    const { html: htmlContent, remainder } = htmlSplit;
+    const validation = validateHtml(htmlContent);
+    const htmlCard = !validation.valid ? (
+      <HtmlCard
+        html={htmlContent}
+        errorReason={validation.reason}
+        errorMetadata={validation.metadata}
+        onRegenerate={onRegenerate}
+      />
+    ) : (
+      <HtmlCard html={htmlContent} />
+    );
+
+    if (!remainder) {
+      return htmlCard;
+    }
+
+    return (
+      <div className={className}>
+        {htmlCard}
+        <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins} components={components as any}>
+          {remainder}
+        </ReactMarkdown>
+      </div>
+    );
+  }
 
   return (
     <div className={className}>

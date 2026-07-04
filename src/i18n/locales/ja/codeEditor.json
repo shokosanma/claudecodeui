@@ -30,5 +30,17 @@
   "binaryFile": {
     "title": "バイナリファイル",
     "message": "ファイル \"{{fileName}}\" はバイナリファイルのため、テキストエディタで表示できません。"
+  },
+  "htmlCard": {
+    "loadFailed": "読み込み失敗",
+    "regenerate": "再生成",
+    "zoomIn": "拡大",
+    "zoomOut": "縮小",
+    "resetZoom": "ズームリセット",
+    "loading": "読み込み中...",
+    "htmlRenderError": "HTML コンテンツの検証に失敗しました：{{reason}}。クリックして再生成。",
+    "contentTooLarge": "コンテンツが 200KB 制限を超えています（現在 {{size}}KB）",
+    "invalidHtml": "有効な HTML 形式ではありません",
+    "externalResources": "外部リソースへの参照が含まれています。data: URI を使用してください"
   }
 }

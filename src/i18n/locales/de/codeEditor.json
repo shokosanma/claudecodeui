@@ -32,5 +32,17 @@
   "binaryFile": {
     "title": "Binärdatei",
     "message": "Die Datei \"{{fileName}}\" kann im Texteditor nicht angezeigt werden, da es sich um eine Binärdatei handelt."
+  },
+  "htmlCard": {
+    "loadFailed": "Laden fehlgeschlagen",
+    "regenerate": "Neu generieren",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern",
+    "resetZoom": "Zoom zurücksetzen",
+    "loading": "Laden...",
+    "htmlRenderError": "Die HTML-Validierung ist fehlgeschlagen: {{reason}}. Klicken Sie zum Neugenerieren.",
+    "contentTooLarge": "Inhalt überschreitet das 200KB-Limit (aktuell {{size}}KB)",
+    "invalidHtml": "Inhalt ist kein gültiges HTML-Format",
+    "externalResources": "Enthält externe Ressourcenverweise. Bitte verwenden Sie data: URI"
   }
 }

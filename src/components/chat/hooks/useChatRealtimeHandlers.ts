@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 
 import type { ServerEvent } from '../../../contexts/WebSocketContext';
+import { extractHtmlContent, looksLikeHtml, validateHtml } from '../utils/htmlValidation';
 import { showCompletionTitleIndicator } from '../../../utils/pageTitleNotification';
 import { playChatCompletionSound, playNotificationSound } from '../../../utils/notificationSound';
 import type { MarkSessionIdle, MarkSessionProcessing } from '../../../hooks/useSessionProtection';
@@ -16,6 +17,46 @@ const isActionablePermissionRequest = (request: { toolName?: unknown } | null | 
 const hasActionablePermissionRequests = (requests: Array<{ toolName?: unknown }> | null | undefined): boolean => {
   return Array.isArray(requests) && requests.some((request) => isActionablePermissionRequest(request));
 };
+
+type HtmlValidationFailure = {
+  html: string;
+  reason: string;
+  metadata?: Record<string, string>;
+};
+
+function getHtmlValidationFailure(content: string): HtmlValidationFailure | null {
+  if (!looksLikeHtml(content)) return null;
+  const html = extractHtmlContent(content);
+  if (!html) return null;
+  const validation = validateHtml(html);
+  if (validation.valid) return null;
+  return {
+    html,
+    reason: validation.reason ?? 'invalidHtml',
+    metadata: validation.metadata,
+  };
+}
+
+function appendHtmlValidationError(
+  sessionStore: SessionStore,
+  sid: string,
+  provider: LLMProvider,
+  failure: HtmlValidationFailure,
+) {
+  sessionStore.removeStreamingMessage(sid);
+  sessionStore.appendRealtime(sid, {
+    id: `html_validation_error_${Date.now()}`,
+    sessionId: sid,
+    timestamp: new Date().toISOString(),
+    provider,
+    kind: 'text',
+    role: 'assistant',
+    content: failure.html,
+    isHtmlError: true,
+    htmlErrorReason: failure.reason,
+    htmlErrorMetadata: failure.metadata,
+  } as NormalizedMessage);
+}
 
 interface UseChatRealtimeHandlersArgs {
   subscribe: (listener: (event: ServerEvent) => void) => () => void;
@@ -199,7 +240,16 @@ export function useChatRealtimeHandlers({
         }
         if (sid) {
           if (accumulatedStreamRef.current) {
-            sessionStore.updateStreaming(sid, accumulatedStreamRef.current, provider);
+            const content = accumulatedStreamRef.current;
+            const htmlFailure = getHtmlValidationFailure(content);
+
+            if (htmlFailure) {
+              appendHtmlValidationError(sessionStore, sid, provider, htmlFailure);
+              accumulatedStreamRef.current = '';
+              return;
+            }
+
+            sessionStore.updateStreaming(sid, content, provider);
           }
           sessionStore.finalizeStreaming(sid);
         }
@@ -227,7 +277,16 @@ export function useChatRealtimeHandlers({
             streamTimerRef.current = null;
           }
           if (sid && accumulatedStreamRef.current) {
-            sessionStore.updateStreaming(sid, accumulatedStreamRef.current, provider);
+            const content = accumulatedStreamRef.current;
+            const htmlFailure = getHtmlValidationFailure(content);
+
+            if (htmlFailure) {
+              appendHtmlValidationError(sessionStore, sid, provider, htmlFailure);
+              accumulatedStreamRef.current = '';
+              break;
+            }
+
+            sessionStore.updateStreaming(sid, content, provider);
             sessionStore.finalizeStreaming(sid);
           }
           accumulatedStreamRef.current = '';

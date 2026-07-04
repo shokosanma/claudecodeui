@@ -19,6 +19,7 @@ import { sessionsService } from './modules/providers/services/sessions.service.j
 import { providerAuthService } from './modules/providers/services/provider-auth.service.js';
 import { providerModelsService } from './modules/providers/services/provider-models.service.js';
 import { createCompleteMessage, createNormalizedMessage } from './shared/utils.js';
+import { prependHtmlOutputInstructions } from '../shared/html-output-prompt.js';
 
 const activeCodexSessions = new Map();
 
@@ -231,6 +232,8 @@ export async function queryCodex(command, options = {}, ws) {
     permissionMode = 'default'
   } = options;
 
+  const providerCommand = prependHtmlOutputInstructions(command, options.htmlOutputInstructions);
+
   const resolvedModel = await providerModelsService.resolveResumeModel(
     'codex',
     sessionId,
@@ -288,7 +291,7 @@ export async function queryCodex(command, options = {}, ws) {
       registerSession(capturedSessionId);
     }
 
-    const streamedTurn = await thread.runStreamed(command, {
+    const streamedTurn = await thread.runStreamed(providerCommand, {
       signal: abortController.signal
     });
 

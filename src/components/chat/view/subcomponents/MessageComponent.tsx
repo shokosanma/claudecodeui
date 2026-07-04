@@ -14,6 +14,7 @@ import { ToolRenderer, shouldHideToolResult } from '../../tools';
 import { Reasoning, ReasoningTrigger, ReasoningContent } from '../../../../shared/view/ui';
 
 import { Markdown } from './Markdown';
+import { HtmlCard } from './HtmlCard';
 import MessageCopyControl from './MessageCopyControl';
 import MessageSpeakControl from './MessageSpeakControl';
 
@@ -34,6 +35,7 @@ type MessageComponentProps = {
   showThinking?: boolean;
   selectedProject?: Project | null;
   provider: Provider | string;
+  onRegenerateHtml?: (message: ChatMessage) => void;
 };
 
 type InteractiveOption = {
@@ -44,7 +46,7 @@ type InteractiveOption = {
 
 const COPY_HIDDEN_TOOL_NAMES = new Set(['Bash', 'Edit', 'Write', 'ApplyPatch']);
 
-const MessageComponent = memo(({ message, prevMessage, createDiff, onFileOpen, showRawParameters, showThinking, selectedProject, provider }: MessageComponentProps) => {
+const MessageComponent = memo(({ message, prevMessage, createDiff, onFileOpen, showRawParameters, showThinking, selectedProject, provider, onRegenerateHtml }: MessageComponentProps) => {
   const { t } = useTranslation('chat');
   const isGrouped = prevMessage && prevMessage.type === message.type &&
     ((prevMessage.type === 'assistant') ||
@@ -337,6 +339,17 @@ const MessageComponent = memo(({ message, prevMessage, createDiff, onFileOpen, s
                 {(() => {
                   const content = formattedMessageContent;
 
+                  if (message.isHtmlError) {
+                    return (
+                      <HtmlCard
+                        html={content}
+                        errorReason={String(message.htmlErrorReason || 'invalidHtml')}
+                        errorMetadata={message.htmlErrorMetadata as Record<string, string> | undefined}
+                        onRegenerate={onRegenerateHtml ? () => onRegenerateHtml(message) : undefined}
+                      />
+                    );
+                  }
+
                   // Detect if content is pure JSON (starts with { or [)
                   const trimmedContent = content.trim();
                   if ((trimmedContent.startsWith('{') || trimmedContent.startsWith('[')) &&
@@ -369,7 +382,10 @@ const MessageComponent = memo(({ message, prevMessage, createDiff, onFileOpen, s
 
                   // Normal rendering for non-JSON content
                   return message.type === 'assistant' ? (
-                    <Markdown className="prose prose-sm prose-gray max-w-none font-serif dark:prose-invert">
+                    <Markdown
+                      className="prose prose-sm prose-gray max-w-none font-serif dark:prose-invert"
+                      onRegenerate={onRegenerateHtml ? () => onRegenerateHtml(message) : undefined}
+                    >
                       {content}
                     </Markdown>
                   ) : (

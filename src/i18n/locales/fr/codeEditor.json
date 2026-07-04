@@ -32,5 +32,17 @@
   "binaryFile": {
     "title": "Fichier binaire",
     "message": "Le fichier \"{{fileName}}\" ne peut pas être affiché dans l'éditeur de texte car c'est un fichier binaire."
+  },
+  "htmlCard": {
+    "loadFailed": "Échec du chargement",
+    "regenerate": "Régénérer",
+    "zoomIn": "Agrandir",
+    "zoomOut": "Réduire",
+    "resetZoom": "Réinitialiser le zoom",
+    "loading": "Chargement...",
+    "htmlRenderError": "La validation du contenu HTML a échoué : {{reason}}. Cliquez pour régénérer.",
+    "contentTooLarge": "Le contenu dépasse la limite de 200 Ko (actuellement {{size}} Ko)",
+    "invalidHtml": "Le contenu n'est pas au format HTML valide",
+    "externalResources": "Contient des références à des ressources externes. Veuillez utiliser data: URI"
   }
 }

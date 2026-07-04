@@ -11,6 +11,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { authenticatedFetch } from '../utils/api';
 import type { LLMProvider } from '../types/app';
+import { stripHtmlOutputPrompt } from '../../shared/html-output-prompt.js';
 
 // ─── NormalizedMessage (mirrors server/adapters/types.js) ────────────────────
 
@@ -84,6 +85,10 @@ export interface NormalizedMessage {
   // Cursor-specific ordering
   sequence?: number;
   rowid?: number;
+  /** HtmlCard validation failed — render error state with optional regenerate */
+  isHtmlError?: boolean;
+  htmlErrorReason?: string;
+  htmlErrorMetadata?: Record<string, string>;
 }
 
 // ─── Per-session slot ────────────────────────────────────────────────────────
@@ -133,7 +138,7 @@ const LOCAL_USER_DEDUPE_CLOCK_SKEW_MS = 10_000;
 
 function userTextFingerprint(m: NormalizedMessage): string | null {
   if (m.kind !== 'text' || m.role !== 'user') return null;
-  const t = (m.content || '').trim();
+  const t = stripHtmlOutputPrompt((m.content || '').trim());
   return t.length > 0 ? t : null;
 }
 
@@ -682,6 +687,19 @@ export function useSessionStore() {
   }, [notify]);
 
   /**
+   * Remove the in-flight streaming placeholder without finalizing it.
+   */
+  const removeStreamingMessage = useCallback((sessionId: string) => {
+    const slot = storeRef.current.get(sessionId);
+    if (!slot) return;
+    const streamId = `__streaming_${sessionId}`;
+    if (!slot.realtimeMessages.some(m => m.id === streamId)) return;
+    slot.realtimeMessages = slot.realtimeMessages.filter(m => m.id !== streamId);
+    recomputeMergedIfNeeded(slot);
+    notify(sessionId);
+  }, [notify]);
+
+  /**
    * Clear realtime messages for a session (e.g., after stream completes and server fetch catches up).
    */
   const clearRealtime = useCallback((sessionId: string) => {
@@ -720,6 +738,7 @@ export function useSessionStore() {
     isStale,
     updateStreaming,
     finalizeStreaming,
+    removeStreamingMessage,
     clearRealtime,
     getMessages,
     getSessionSlot,
@@ -727,7 +746,7 @@ export function useSessionStore() {
     getSlot, has, fetchFromServer, fetchMore,
     appendRealtime, appendRealtimeBatch, refreshFromServer,
     setActiveSession, setStatus, isStale, updateStreaming, finalizeStreaming,
-    clearRealtime, getMessages, getSessionSlot,
+    removeStreamingMessage, clearRealtime, getMessages, getSessionSlot,
   ]);
 }
 

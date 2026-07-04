@@ -1,3 +1,4 @@
+import { HTML_OUTPUT_PROMPT } from '../../../../shared/html-output-prompt.js';
 import type { WebSocket } from 'ws';
 
 import { sessionsDb } from '@/modules/database/index.js';
@@ -100,6 +101,12 @@ function readRequiredSessionId(data: AnyRecord): string | null {
 }
 
 /**
+ * Prompt injected for providers that only accept a single user prompt string.
+ * Claude receives this via systemPrompt.append instead (see claude-sdk.js).
+ */
+const HTML_OUTPUT_INSTRUCTIONS = HTML_OUTPUT_PROMPT;
+
+/**
  * Handles `chat.send`: resolves the session row (provider, project path, and
  * provider-native id all come from the database — never from the client),
  * registers the run, and dispatches to the provider runtime.
@@ -153,7 +160,8 @@ async function handleChatSend(
   }
 
   const clientOptions = (data.options ?? {}) as AnyRecord;
-  const command = typeof data.content === 'string' ? data.content : '';
+  const rawCommand = typeof data.content === 'string' ? data.content : '';
+  const command = rawCommand;
 
   // The provider runtimes receive the provider-native session id (that is the
   // id their CLI/SDK understands for resume). Brand-new sessions have no
@@ -161,6 +169,7 @@ async function handleChatSend(
   // gateway writer captures and maps back to the app session id.
   const runtimeOptions: AnyRecord = {
     ...clientOptions,
+    htmlOutputInstructions: rawCommand ? HTML_OUTPUT_INSTRUCTIONS : undefined,
     sessionId: session.provider_session_id ?? undefined,
     resume: Boolean(session.provider_session_id),
     cwd: clientOptions.cwd ?? session.project_path ?? undefined,
