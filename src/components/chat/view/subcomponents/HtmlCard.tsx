@@ -230,9 +230,11 @@ export function HtmlCard({ html, onRegenerate, errorReason, errorMetadata }: Htm
             <div
               style={{
                 transform: scale !== 1 ? `scale(${scale})` : undefined,
-                transformOrigin: 'top left',
+                transformOrigin: 'top center',
                 width: scale !== 1 ? `${100 / scale}%` : '100%',
                 height: iframeHeight,
+                marginLeft: scale !== 1 ? 'auto' : undefined,
+                marginRight: scale !== 1 ? 'auto' : undefined,
               }}
             >
               <iframe

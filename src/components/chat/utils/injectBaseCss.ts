@@ -44,6 +44,9 @@ body {
   line-height: 1.6;
   letter-spacing: 0.02em;
   overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
   background-color: var(--bg-deep) !important;
   background-image:
     linear-gradient(var(--bg-grid) 1px, transparent 1px),
@@ -52,6 +55,13 @@ body {
     radial-gradient(ellipse 60% 40% at 100% 100%, rgba(99, 102, 241, 0.08), transparent 50%) !important;
   background-size: 20px 20px, 20px 20px, 100% 100%, 100% 100% !important;
   -webkit-font-smoothing: antialiased;
+}
+
+body > * {
+  width: 100% !important;
+  max-width: 520px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
 .diagram {
