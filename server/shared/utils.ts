@@ -910,9 +910,7 @@ export async function findProviderSkillMarkdownFiles(
     }
 
     for (const entry of entries) {
-      // Symlinks to skill directories are common in ~/.cursor/skills; Dirent.isDirectory()
-      // is false for links even when the target is a directory.
-      if (entry.isDirectory() || entry.isSymbolicLink()) {
+      if (entry.isDirectory()) {
         await collectRecursive(path.join(dirPath, entry.name));
       }
     }
@@ -927,7 +925,7 @@ export async function findProviderSkillMarkdownFiles(
     const entries = await readdir(rootDir, { withFileTypes: true });
 
     for (const entry of entries) {
-      if (!entry.isDirectory() && !entry.isSymbolicLink()) {
+      if (!entry.isDirectory()) {
         continue;
       }
 
